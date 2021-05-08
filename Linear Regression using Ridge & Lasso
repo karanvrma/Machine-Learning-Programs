@@ -1,0 +1,82 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.linear_model import LinearRegression, Ridge, Lasso  
+from statistics import mean
+
+data= pd.read_csv('melb_data.csv')
+dropColumns = ["Suburb", "Address", "SellerG", "CouncilArea", "Type", "Method", "Regionname","Date","Postcode"]
+data1 = data.drop(dropColumns, axis = 1)
+data1 = data1.dropna()
+
+y = data1['Price']
+X = data1.drop('Price', axis = 1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
+
+#Linear regression
+
+
+
+#Ridge
+
+cross_val_scores_ridge = []
+alpha = []
+ 
+for i in range(1, 9):
+    ridgeModel = Ridge(alpha = i * 0.25)
+    ridgeModel.fit(X_train, y_train)
+    scores = cross_val_score(ridgeModel, X, y, cv = 10)
+    avg_cross_val_score = mean(scores)*100
+    cross_val_scores_ridge.append(avg_cross_val_score)
+    alpha.append(i * 0.25)
+
+for i in range(0, len(alpha)):
+    print(str(alpha[i])+' : '+str(cross_val_scores_ridge[i]))
+
+#best value = 2.0 : 54.08416625560864
+   
+
+ridgeModelChosen = Ridge(alpha = 2)
+ridgeModelChosen.fit(X_train, y_train)  
+print(ridgeModelChosen.score(X_test, y_test))
+
+
+#Lasso
+ 
+cross_val_scores_lasso = []
+Lambda = []
+for i in range(1, 9):
+    lassoModel = Lasso(alpha = i * 0.25)
+    lassoModel.fit(X_train, y_train)
+    scores = cross_val_score(lassoModel, X, y, cv = 10)
+    avg_cross_val_score = mean(scores)*100
+    cross_val_scores_lasso.append(avg_cross_val_score)
+    Lambda.append(i * 0.25)
+for i in range(0, len(alpha)):
+    print(str(alpha[i])+' : '+str(cross_val_scores_lasso[i]))
+   
+#best value: 2.0 : 54.061424778660424
+
+linearModel = LinearRegression()
+linearModel.fit(X_train, y_train)
+print(linearModel.score(X_test, y_test))
+     
+lassoModelChosen = Lasso(alpha = 2)
+lassoModelChosen.fit(X_train, y_train)
+print(lassoModelChosen.score(X_test, y_test))
+
+
+models = ['Linear Regression', 'Ridge Regression', 'Lasso Regression']
+scores = [linearModel.score(X_test, y_test),
+ridgeModelChosen.score(X_test, y_test),
+lassoModelChosen.score(X_test, y_test)]
+
+mapping = {}
+mapping['Linear Regression'] = linearModel.score(X_test, y_test)
+mapping['Ridge Regreesion'] = ridgeModelChosen.score(X_test, y_test)
+mapping['Lasso Regression'] = lassoModelChosen.score(X_test, y_test)
+for key, val in mapping.items():
+    print(str(key)+' : '+str(val))
+
+
