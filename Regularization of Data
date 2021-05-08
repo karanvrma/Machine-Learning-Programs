@@ -1,0 +1,92 @@
+import pandas as pd import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression, Ridge, Lasso
+from sklearn.model_selection import train_test_split, cross_val_score 
+from statistics import mean
+
+data = pd.read_csv('kc_house_data.csv')
+
+data = data.dropna()
+# Dropping the numerically non-sensical variables 
+dropColumns = ['id', 'date', 'zipcode']
+data = data.drop(dropColumns, axis = 1)
+
+y = data['price']
+X = data.drop('price', axis = 1)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3) 
+# Bulding and fitting the Linear Regression model
+linearModel = LinearRegression() 
+linearModel.fit(X_train, y_train)
+
+# Evaluating the Linear Regression model
+# print(linearModel.score(X_test, y_test))
+
+# # List to maintain the different cross-validation scores 
+# cross_val_scores_ridge = []
+
+# # List to maintain the different values of alpha 
+# alpha = []
+
+# # Loop to compute the different values of cross-validation scores 
+# for i in range(1, 9):
+ 
+ridgeModel = Ridge(alpha = i * 0.25) 
+#	ridgeModel.fit(X_train, y_train)
+#	scores = cross_val_score(ridgeModel, X, y, cv = 10) 
+#	avg_cross_val_score = mean(scores)*100
+#	cross_val_scores_ridge.append(avg_cross_val_score) 
+#	alpha.append(i * 0.25)
+
+# # Loop to print the different values of cross-validation scores 
+# for i in range(0, len(alpha)):
+#	print(str(alpha[i])+' : '+str(cross_val_scores_ridge[i]))
+
+# Building and fitting the Ridge Regression model 
+
+ridgeModelChosen = Ridge(alpha = 2) 
+ridgeModelChosen.fit(X_train, y_train)
+
+# # Evaluating the Ridge Regression model
+# print(ridgeModelChosen.score(X_test, y_test)) 
+# cross_val_scores_lasso = []
+# # List to maintain the different values of Lambda 
+
+# Lambda = []
+
+# # Loop to compute the cross-validation scores 
+# for i in range(1, 9):
+#	lassoModel = Lasso(alpha = i * 0.25, tol = 0.0925) 
+
+#	lassoModel.fit(X_train, y_train)
+#	scores = cross_val_score(lassoModel, X, y, cv = 10) 
+#	avg_cross_val_score = mean(scores)*100
+#	cross_val_scores_lasso.append(avg_cross_val_score) 
+
+#	Lambda.append(i * 0.25)
+
+# # Loop to print the different values of cross-validation scores 
+# for i in range(0, len(alpha)):
+#	print(str(alpha[i])+' : '+str(cross_val_scores_lasso[i]))
+
+lassoModelChosen = Lasso(alpha = 2, tol = 0.0925) 
+lassoModelChosen.fit(X_train, y_train)
+
+# # Evaluating the Lasso Regression model
+ 
+# print(lassoModelChosen.score(X_test, y_test))
+
+models = ['Linear Regression', 'Ridge Regression', 'Lasso Regression'] 
+scores = [linearModel.score(X_test, y_test),
+ridgeModelChosen.score(X_test, y_test), lassoModelChosen.score(X_test, y_test)]
+
+# Printing the scores 
+
+for different models for key, val in zip(models, scores):
+print(str(key)+' : '+str(val))
+
+
+# Plotting the scores plt.bar(models, scores) plt.margins(tight=True) plt.ylim(0.67, 0.73) plt.xlabel('Regression Models') plt.ylabel('Score')
+plt.show()
+
+
+ 
