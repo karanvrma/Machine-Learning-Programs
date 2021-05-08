@@ -1,0 +1,50 @@
+#Importing the libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+#Importing the dataset
+dataset = pd.read_csv("50_Startups.csv")
+
+#For storing the features in X we use…
+X = dataset.iloc[:, :-1].values
+
+#The dependent variable Profit which tells you the Profit acquired by the Startup.
+y = dataset.iloc[:, 4].values
+
+#Importing the Label Encoder Class along with OneHotEncode
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+#Creating an Object of the Label Encoder class
+labelencoder = LabelEncoder()
+
+#creating an object of the one Hot Encoder class
+onehotencoder = OneHotEncoder()
+#As it is clear that the only categorical data is the name of the state which is stored at the 3rd Index in our Dataset so we encode that column
+X[:, 3] = labelencoder.fit_transform(X[:, 3])
+X = onehotencoder.fit_transform(X).toarray()
+
+#Dropping the 1st column out of the Dataset which contains one of the OneHotEncoded values…
+X = X[:, 1:]
+
+#Importing the Libraries and Applying Cross Validation with 80% data as Training Data and 20% as Test Data.
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+
+#Importing the Linear Regression Class
+from sklearn.linear_model import LinearRegression
+
+#Creating an object of the Linear Regression Class
+regressor = LinearRegression()
+
+#Fit the created object to our training set
+regressor.fit(X_train, y_train)
+
+#Predicting the Test set results
+y_pred = regressor.predict(X_test)
+
+#Printing the predicted values
+print(y_pred)
+
+#To see the difference b/w predicted and actual results we will also print the test values
+print(y_test)
