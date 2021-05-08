@@ -1,0 +1,34 @@
+import pandas as pd 
+import numpy as np 
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+from sklearn.datasets import load_breast_cancer cancer = load_breast_cancer()
+
+df_cancer = pd.DataFrame(np.c_[cancer['data'], cancer['target']], columns = np.append(cancer['feature_names'], ['target']))
+
+# print(df_cancer.head())
+
+# sns.pairplot(df_cancer, hue = 'target', vars = ['mean radius', 'mean texture', 'mean perimeter','mean area','mean smoothness'] )
+# sns.countplot(df_cancer['target'], label = "Count") # plt.figure(figsize=(20,12))
+# sns.heatmap(df_cancer.corr(), annot=True) 
+# plt.show()
+
+X = df_cancer.drop(['target'], axis = 1) 
+y = df_cancer['target']
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 20)
+
+from sklearn.svm import SVC 
+svc_model = SVC()
+
+svc_model.fit(X_train, y_train) 
+y_predict = svc_model.predict(X_test)
+
+from sklearn.metrics import classification_report, confusion_matrix
+ 
+cm = np.array(confusion_matrix(y_test, y_predict, labels=[1,0])) 
+confusion = pd.DataFrame(cm, index=['is_cancer', 'is_healthy'], columns=['predicted_cancer','predicted_healthy']) sns.heatmap(confusion, annot=True)
+plt.show()
+print(classification_report(y_test, y_predict))
