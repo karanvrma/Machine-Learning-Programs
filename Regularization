@@ -1,0 +1,111 @@
+
+# %matplotlib inline
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Read the dataset
+dataset=pd.read_csv('melb_data.csv')
+dataset.head()
+
+# printing of unique values in dataset
+dataset.nunique()
+
+# Shape of the dataset
+dataset.shape
+
+# Choose columns of your interest
+cols_to_use=['Suburb','Rooms', 'Type','Method', 'SellerG', 'Regionname', 'Propertycount', 'Distance', 'CouncilArea', 'Bedroom2', 'Bathroom', 'Car', 'Landsize','BuildingArea', 'Price']
+
+dataset=dataset[cols_to_use]
+dataset.head()
+
+#check now shape of dataset
+dataset.shape
+
+#Checking for null values
+dataset.isnull().sum()
+
+# representing null values in heatmap function
+sns.heatmap(dataset.isnull(), yticklabels=False, cmap='plasma')
+
+# Remove of the null values
+dataset.dropna(inplace=True)
+
+# representing null values in heatmap function
+sns.heatmap(dataset.isnull(), yticklabels=False, cmap='plasma')
+
+#Checking for null values
+dataset.isnull().sum()
+
+dataset.head()
+
+"""# Conversion of String values to categorial one"""
+
+# Need dummy encoding for every column whose values are strings using pandas library
+dataset=pd.get_dummies(dataset)
+dataset.head()
+
+"""# Test and Traing"""
+
+# Define dependent and independent variables x and y
+X=dataset.drop('Price', axis=1)
+y=dataset['Price']
+
+# use of train_test_split from sklearn library
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=2)
+
+# import regular linear regression model
+from sklearn.linear_model import LinearRegression
+
+# create instance for model
+reg=LinearRegression()
+
+#fit the model
+reg.fit(X_train, y_train)
+
+# check score of model on test data
+reg.score(X_test, y_test)
+
+# check score of model on training data
+reg.score(X_train, y_train)
+
+# So, test data gave score in -ve even, whereas training data gave score of 77%, so here arise the problem of overfitting of dataset.
+
+"""# Solution of this overfiting problem using Lasso model (L1 regularization model)"""
+
+#import lasso model from sklearn
+from sklearn import linear_model
+lasso_reg=linear_model.Lasso(alpha=50, max_iter=100, tol=0.01)
+
+lasso_reg.fit(X_train, y_train)
+
+# now check score on testing values using Lasso model
+lasso_reg.score(X_test, y_test)
+
+# So, accuracy improved here on this dataset.
+
+# now check score on training values using Lasso model
+lasso_reg.score(X_train, y_train)
+
+# So, accuracy improved here on this dataset.
+
+"""# Solution of this overfiting problem using Lasso model (L2 regularization model)"""
+
+# import Ridge model (L2 Regularizatio) from sklearn
+from sklearn.linear_model import Ridge
+ridge_reg=linear_model.Lasso(alpha=50, max_iter=100, tol=0.1)
+
+ridge_reg.fit(X_train, y_train)
+
+# now check score on testing values using Ridge model
+ridge_reg.score(X_test, y_test)
+
+# So, accuracy improved here on this dataset.
+
+# now check score on training values using Lasso model
+ridge_reg.score(X_train, y_train)
+
+# So, accuracy improved here on this dataset.
